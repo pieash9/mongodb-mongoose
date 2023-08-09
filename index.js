@@ -42,6 +42,35 @@ const connectDB = async () => {
   }
 };
 
+// find all products
+app.get("/products", async (req, res) => {
+  try {
+    const products = await Product.find({ price: { $gt: 45 } });
+    if (products) {
+      res.status(200).send(products);
+    } else {
+      res.status(404).send({ message: "Products not found!" });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
+// get specific product data
+app.get("/products/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const product = await Product.findOne();
+    if (product) {
+      res.status(200).send(product);
+    } else {
+      res.status(404).send({ message: "Product not found!" });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
 // post product data
 app.post("/products", async (req, res) => {
   try {
