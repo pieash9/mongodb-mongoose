@@ -4,11 +4,24 @@ const mongoose = require("mongoose");
 const app = express();
 const port = 3000;
 
+// middleware
+app.use(express.json()); //  for send json data
+app.use(express.urlencoded({ extended: true }));
+
 //create product schema
 const productsSchema = mongoose.Schema({
-  title: String,
-  price: Number,
-  description: String,
+  title: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -28,6 +41,18 @@ const connectDB = async () => {
     process.exit(1);
   }
 };
+
+// post product data
+app.post("/products", async (req, res) => {
+  try {
+    const product = req.body;
+    const newProduct = new Product({ ...product });
+    const productData = await newProduct.save();
+    res.status(200).send(productData);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
 
 app.listen(port, async () => {
   console.log(`server is running at port ${port}`);
