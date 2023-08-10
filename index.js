@@ -45,12 +45,17 @@ const connectDB = async () => {
 // find all products
 app.get("/products", async (req, res) => {
   try {
-    const products = await Product.find({ price: { $gt: 45 } });
-    if (products) {
-      res.status(200).send(products);
+    const price = req.query.price;
+    let products;
+    if (price) {
+      products = await Product.find({ price: { $gt: price } });
     } else {
-      res.status(404).send({ message: "Products not found!" });
+      products = await Product.find();
     }
+    if (products.length == 0) {
+      res.status(400).send({ message: "product not found" });
+    }
+    res.status(200).send(products);
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
